@@ -1,0 +1,7 @@
+Common Spanish Words
+hello;hola
+please;por favor
+sorry;lo siento
+school;la escuela
+book;el libro
+pencil;el lapiz
