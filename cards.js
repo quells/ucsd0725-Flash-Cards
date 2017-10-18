@@ -114,5 +114,7 @@ function loadData(subject_dir) {
 // }
 
 module.exports = {
-    Load: loadData
+    Load: loadData,
+    FlashCard: FlashCard,
+    Deck: Deck,
 }

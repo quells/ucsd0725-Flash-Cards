@@ -42,7 +42,12 @@ function displayDecks() {
     .catch(console.error)
 }
 
+var needToPractice = new cards.Deck("", [])
 function playDeck(deck) {
+    var deck = new cards.Deck(deck.title, deck.cards)
+    needToPractice.title = deck.title
+    needToPractice.cards = []
+
     deck.ShuffleCards()
     inq.prompt([{
         type: "list",
@@ -57,27 +62,48 @@ function playDeck(deck) {
             p = p.then(() => playCard(c, showFront))
             .then(result => {
                 return new Promise((resolve, reject) => {
-                    switch (result) {
+                    switch (result.code) {
                         case "exit":
                             reject("exit")
                             break
                         case "skip":
+                            needToPractice.cards.push(result.card)
                             resolve()
                             break
                         case "flip":
+                            needToPractice.cards.push(result.card)
                             resolve()
                             break
                         default:
-                            if (result.result === true) {
+                            if (result.code === true) {
                                 console.log("Correct!")
                                 resolve()
                             } else {
+                                needToPractice.cards.push(result.card)
                                 console.log(`Incorrect: ${result.correct}`)
                                 resolve()
                             }
                     }
                 })
             })
+        })
+        p = p.then(() => {
+            if (needToPractice.cards.length > 0) {
+                inq.prompt([{
+                    type: "confirm",
+                    name: "practice",
+                    message: "Would you like to practice the cards you missed?"
+                }])
+                .then(answer => {
+                    if (answer.practice) {
+                        playDeck(needToPractice)
+                    } else {
+                        displayDecks()
+                    }
+                })
+            } else {
+                displayDecks()
+            }
         })
         p = p.catch(err => {
             if (err === "exit") {
@@ -100,12 +126,20 @@ function playCard(card, showFront) {
     .then(answers => {
         switch (answers.action) {
             case "Exit":
-                return "exit"
+                return {
+                    code: "exit"
+                }
             case "Skip":
-                return "skip"
+                return {
+                    code: "skip",
+                    card: card
+                }
             case "Flip":
                 console.log(correctAnswer)
-                return "flip"
+                return {
+                    code: "flip",
+                    card: card
+                }
             case "Answer":
                 return inq.prompt([{
                     type: "input",
@@ -114,8 +148,9 @@ function playCard(card, showFront) {
                 }])
                 .then(answers => {
                     return {
-                        result: answers.userAnswer === correctAnswer,
-                        correct: correctAnswer
+                        code: answers.userAnswer === correctAnswer,
+                        correct: correctAnswer,
+                        card: card
                     }
                 })
         }
