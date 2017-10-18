@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/quells/ucsd0725-Flash-Cards/issues"
   },
-  "homepage": "https://github.com/quells/ucsd0725-Flash-Cards#readme"
+  "homepage": "https://github.com/quells/ucsd0725-Flash-Cards#readme",
+  "dependencies": {
+    "inquirer": "^3.3.0"
+  }
 }
